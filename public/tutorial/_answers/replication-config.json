@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/revisit-studies/study/main/src/parser/StudyConfigSchema.json",
+  "$schema": "https://raw.githubusercontent.com/revisit-studies/study/v2.3.2/src/parser/StudyConfigSchema.json",
   "studyMetadata": {
     "title": "Scatter Plot JND Study",
     "version": "pilot",
@@ -21,22 +21,22 @@
   },
   "baseComponents": {
     "scatterBase": {
-    "type": "react-component",
-    "path": "tutorial/assets/replication/ScatterWrapper.tsx",
-    "response": [
-      {
-        "id": "buttonsResponse",
-        "type": "buttons",
-        "prompt": "Choose the plot with the higher correlation:",
-        "required": true,
-        "location": "belowStimulus",
-        "options": [
-          { "label": "Left Plot", "value": "left" },
-          { "label": "Right Plot", "value": "right" }
-        ]
-      }
-    ]
-  }
+      "type": "react-component",
+      "path": "tutorial/assets/replication/ScatterWrapper.tsx",
+      "response": [
+        {
+          "id": "buttonsResponse",
+          "type": "buttons",
+          "prompt": "Choose the plot with the higher correlation:",
+          "required": true,
+          "location": "belowStimulus",
+          "options": [
+            { "label": "Left Plot", "value": "left" },
+            { "label": "Right Plot", "value": "right" }
+          ]
+        }
+      ]
+    }
   },
   "components": {
     "practice T1 A:0.3 B:0.7": {
