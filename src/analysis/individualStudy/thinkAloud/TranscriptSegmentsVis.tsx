@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { ColorSwatch, Tooltip } from '@mantine/core';
-import { ScaleLinear } from 'd3-scale';
+import * as d3 from 'd3';
 import { TranscriptLinesWithTimes } from './types';
 
 const margin = {
@@ -13,7 +13,7 @@ const margin = {
 export function TranscriptSegmentsVis({
   transcriptLines, xScale, startTime, currentShownTranscription,
 } : {
-  transcriptLines: TranscriptLinesWithTimes[], xScale: ScaleLinear<number, number>; startTime: number; currentShownTranscription: number
+  transcriptLines: TranscriptLinesWithTimes[], xScale: d3.ScaleLinear<number, number>; startTime: number; currentShownTranscription: number
 }) {
   const lines = useMemo(() => transcriptLines.map((line) => (
     <g key={line.start}>

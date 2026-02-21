@@ -89,6 +89,38 @@ jobs:
             public/404.html \
             public/vite.svg
 
+      - name: Remove non-template study/demo folders from public/ and src/public/
+        run: |
+          # Top-level public/: keep shared assets, utilities, and the tutorial study.
+          # Everything else (demo-*, example-*, library-*, test-*, etc.) is removed.
+          KEEP_PUBLIC=("libraries" "revisitAssets" "revisitUtilities" "tutorial" "404.html" "vite.svg" "global.json" "README.md")
+          for item in public/*; do
+            name=$(basename "$item")
+            keep=false
+            for k in "${KEEP_PUBLIC[@]}"; do
+              [[ "$name" == "$k" ]] && keep=true && break
+            done
+            if [[ "$keep" == false ]]; then
+              echo "Removing non-template item: $item"
+              rm -rf "$item"
+            fi
+          done
+
+          # src/public/: keep library React components and the tutorial only.
+          KEEP_SRC_PUBLIC=("libraries" "tutorial")
+          for item in src/public/*; do
+            [[ -e "$item" ]] || continue  # skip if glob matched nothing
+            name=$(basename "$item")
+            keep=false
+            for k in "${KEEP_SRC_PUBLIC[@]}"; do
+              [[ "$name" == "$k" ]] && keep=true && break
+            done
+            if [[ "$keep" == false ]]; then
+              echo "Removing non-template item: $item"
+              rm -rf "$item"
+            fi
+          done
+
       - name: Sync GitHub Actions workflows (then restore both sync workflows)
         run: |
           git checkout FETCH_HEAD -- .github/workflows/

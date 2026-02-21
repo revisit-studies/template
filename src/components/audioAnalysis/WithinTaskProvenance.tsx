@@ -1,8 +1,9 @@
+import * as d3 from 'd3';
+
 import {
   Affix,
 } from '@mantine/core';
 import { useMemo } from 'react';
-import { ScaleLinear } from 'd3-scale';
 import { StoredAnswer, TrrackedProvenance } from '../../store/types';
 
 const RECT_HEIGHT = 15;
@@ -12,7 +13,7 @@ const colorPlatte = ['#4269d0', '#ff725c', '#6cc5b0', '#3ca951', '#ff8ab7', '#a4
 
 export function WithinTaskProvenance({
   xScale, height, currentNode, provenance, answer,
-}: {answer: StoredAnswer, height: number, xScale: ScaleLinear<number, number>, currentNode: string | null, provenance: TrrackedProvenance }) {
+}: {answer: StoredAnswer, height: number, xScale: d3.ScaleLinear<number, number>, currentNode: string | null, provenance: TrrackedProvenance }) {
   const colorMap = useMemo(() => {
     const _colorMap = new Map();
     _colorMap.set('Root', '#efb118');

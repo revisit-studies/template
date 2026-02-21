@@ -7,7 +7,7 @@ import {
 } from 'react';
 import { useResizeObserver, useThrottledCallback } from '@mantine/hooks';
 import { WaveForm, WaveSurfer } from 'wavesurfer-react';
-import { scaleLinear } from 'd3-scale';
+import * as d3 from 'd3';
 import {
   Registry, Trrack, initializeTrrack, isRootNode,
 } from '@trrack/core';
@@ -382,7 +382,7 @@ export function AudioProvenanceVis({
     // eslint-disable-next-line no-unsafe-optional-chaining
     const endTime = totalAudioLength > 0 ? answers[taskName]?.startTime + totalAudioLength * 1000 : answers[taskName]?.endTime;
 
-    const scale = scaleLinear([margin.left, width + margin.left + margin.right]).domain([answers[taskName]?.startTime, endTime]).clamp(true);
+    const scale = d3.scaleLinear([margin.left, width + margin.left + margin.right]).domain([answers[taskName]?.startTime, endTime]).clamp(true);
 
     return scale;
   }, [answers, taskName, totalAudioLength, width]);
