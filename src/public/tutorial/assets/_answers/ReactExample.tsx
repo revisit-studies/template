@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { initializeTrrack, Registry } from '@trrack/core';
 import BrushPlotWrapper from '../BrushPlotWrapper';
 import { StimulusParams } from '../../../../store/types';
-import { BrushParams, BrushState } from '../brush-components/assets/types';
+import { BrushParams, BrushState } from '../../../example-brush-interactions/assets/types';
 
 export default function ReactExample({ parameters, setAnswer, provenanceState } : StimulusParams<BrushParams, BrushState>) {
   const [brushState, setBrushState] = useState<BrushState>();

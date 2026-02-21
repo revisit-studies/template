@@ -2,7 +2,7 @@ import {
   Pill,
   Tooltip,
 } from '@mantine/core';
-import { hsl } from 'd3-color';
+import * as d3 from 'd3';
 import { Tag } from '../types';
 
 export function Pills({ selectedTags, removeFunc }: { selectedTags: Tag[], removeFunc?: (s: string) => void }) {
@@ -10,7 +10,7 @@ export function Pills({ selectedTags, removeFunc }: { selectedTags: Tag[], remov
     if (!tag || !tag.id) {
       return null;
     }
-    const lightness = hsl(tag.color).l;
+    const lightness = d3.hsl(tag.color).l;
 
     return (
       <Tooltip key={tag.id} label={tag.name} withinPortal>

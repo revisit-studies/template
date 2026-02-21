@@ -1,7 +1,7 @@
 import {
   useMemo,
 } from 'react';
-import { ScaleLinear } from 'd3-scale';
+import * as d3 from 'd3';
 import { ParticipantData } from '../../storage/types';
 import { WithinTaskProvenance } from './WithinTaskProvenance';
 
@@ -10,7 +10,7 @@ const margin = {
 };
 export function WithinTaskTimeline({
   xScale, answers, width, height, currentNode, trialName,
-} : {xScale: ScaleLinear<number, number>, answers: ParticipantData['answers'], width: number, height: number, currentNode: string | null, trialName: string}) {
+} : {xScale: d3.ScaleLinear<number, number>, answers: ParticipantData['answers'], width: number, height: number, currentNode: string | null, trialName: string}) {
   const circles = useMemo(() => Object.entries(answers).filter((entry) => (trialName ? trialName === entry[0] : true)).map((entry) => {
     const [name, answer] = entry;
 

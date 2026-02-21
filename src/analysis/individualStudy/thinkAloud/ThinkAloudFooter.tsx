@@ -413,7 +413,7 @@ export function ThinkAloudFooter({
                   setSearchParams({ participantId, currentTrial: trial });
                 }
               }}
-              data={participant ? Array.from(new Set(getSequenceFlatMap(participant?.sequence))) : []}
+              data={participant ? getSequenceFlatMap(participant?.sequence) : []}
               searchable
             />
             <Stack gap="4">
