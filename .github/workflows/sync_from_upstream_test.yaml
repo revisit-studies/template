@@ -1,0 +1,130 @@
+name: Sync from Upstream (Test)
+
+# Test version of sync_from_upstream.yaml — identical logic but pushes to a
+# staging branch instead of main so the result can be reviewed before merging.
+
+on:
+  workflow_dispatch:
+    inputs:
+      upstream_ref:
+        description: 'Upstream branch or tag to sync from (e.g. main, v2.3.2)'
+        required: false
+        default: 'main'
+      target_branch:
+        description: 'Branch to push the sync result to'
+        required: false
+        default: 'sync-test'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout template repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch upstream ref
+        run: |
+          git remote add upstream https://github.com/revisit-studies/study.git
+          UPSTREAM_REF="${{ github.event.inputs.upstream_ref }}"
+          git fetch upstream "${UPSTREAM_REF:-main}"
+          UPSTREAM_SHA=$(git rev-parse FETCH_HEAD)
+          echo "UPSTREAM_SHA=$UPSTREAM_SHA" >> "$GITHUB_ENV"
+          echo "Syncing from upstream @ $UPSTREAM_SHA"
+
+      - name: Create or reset target branch
+        run: |
+          TARGET_BRANCH="${{ github.event.inputs.target_branch }}"
+          TARGET_BRANCH="${TARGET_BRANCH:-sync-test}"
+          echo "TARGET_BRANCH=$TARGET_BRANCH" >> "$GITHUB_ENV"
+          # Create the branch from current HEAD (or reset it if it already exists)
+          git checkout -B "$TARGET_BRANCH"
+
+      - name: Sync core source and config files
+        run: |
+          # Full framework source
+          git checkout FETCH_HEAD -- src/
+
+          # E2E and unit tests
+          git checkout FETCH_HEAD -- tests/
+
+          # Root config files
+          git checkout FETCH_HEAD -- \
+            index.html \
+            tsconfig.json \
+            tsconfig.node.json \
+            vite.config.ts \
+            playwright.config.ts \
+            eslint.config.js \
+            typedoc.json \
+            typedocReadMe.md \
+            p_DO_NOT_USE_NPM_USE_YARN \
+            .gitignore
+
+          # Documentation/script generators (may not exist in older refs)
+          git checkout FETCH_HEAD -- libraryDocGenerator.cjs 2>/dev/null || true
+          git checkout FETCH_HEAD -- libraryExampleStudyGenerator.cjs 2>/dev/null || true
+
+          # Git hooks
+          git checkout FETCH_HEAD -- .husky/
+
+          # package.json (post-processed below to remove upstream-only deps)
+          git checkout FETCH_HEAD -- package.json
+
+      - name: Sync selected public/ subdirectories
+        run: |
+          # Sync shared assets and the tutorial study.
+          # public/global.json is intentionally NOT synced — the template
+          # version lists only "tutorial" whereas upstream lists ~47 studies.
+          git checkout FETCH_HEAD -- \
+            public/libraries/ \
+            public/revisitAssets/ \
+            public/revisitUtilities/ \
+            public/tutorial/ \
+            public/404.html \
+            public/vite.svg
+
+      - name: Sync GitHub Actions workflows (then restore both sync workflows)
+        run: |
+          git checkout FETCH_HEAD -- .github/workflows/
+          # Restore both sync workflows — neither exists in upstream
+          git checkout HEAD -- .github/workflows/sync_from_upstream.yaml
+          git checkout HEAD -- .github/workflows/sync_from_upstream_test.yaml
+
+      - name: Remove upstream-only dependencies from package.json
+        run: |
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            // @visdesignlab/upset2-react is only needed for the UpSet2
+            // example study which is not included in this template.
+            const upstreamOnlyDeps = [
+              '@visdesignlab/upset2-react',
+            ];
+            upstreamOnlyDeps.forEach((dep) => {
+              if (pkg.dependencies && dep in pkg.dependencies) {
+                console.log('Removing upstream-only dep:', dep);
+                delete pkg.dependencies[dep];
+              }
+            });
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+
+      - name: Commit and push to target branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes detected — template is already up to date with upstream."
+          else
+            SHORT_SHA="${UPSTREAM_SHA:0:7}"
+            git commit -m "chore: sync from upstream revisit-studies/study@${SHORT_SHA}"
+            git push --force origin "$TARGET_BRANCH"
+            echo "Pushed sync commit to $TARGET_BRANCH."
+          fi
