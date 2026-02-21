@@ -71,22 +71,20 @@ jobs:
 
       - name: Sync selected public/ subdirectories
         run: |
-          # Sync shared assets and the tutorial study.
-          # public/global.json is intentionally NOT synced — the template
-          # version lists only "tutorial" whereas upstream lists ~47 studies.
+          # Sync shared assets and utilities only.
+          # public/global.json is intentionally NOT synced — template version preserved.
           git checkout FETCH_HEAD -- \
             public/libraries/ \
             public/revisitAssets/ \
             public/revisitUtilities/ \
-            public/tutorial/ \
             public/404.html \
             public/vite.svg
 
       - name: Remove non-template study/demo folders from public/ and src/public/
         run: |
-          # Top-level public/: keep shared assets, utilities, and the tutorial study.
-          # Everything else (demo-*, example-*, library-*, test-*, etc.) is removed.
-          KEEP_PUBLIC=("libraries" "revisitAssets" "revisitUtilities" "tutorial" "404.html" "vite.svg" "global.json" "README.md")
+          # Top-level public/: keep only shared assets and utilities.
+          # All studies (including tutorial) and other extras are removed.
+          KEEP_PUBLIC=("libraries" "revisitAssets" "revisitUtilities" "404.html" "vite.svg" "global.json" "README.md")
           for item in public/*; do
             name=$(basename "$item")
             keep=false
@@ -99,8 +97,8 @@ jobs:
             fi
           done
 
-          # src/public/: keep library React components and the tutorial only.
-          KEEP_SRC_PUBLIC=("libraries" "tutorial")
+          # src/public/: keep library React components only.
+          KEEP_SRC_PUBLIC=("libraries")
           for item in src/public/*; do
             [[ -e "$item" ]] || continue  # skip if glob matched nothing
             name=$(basename "$item")
