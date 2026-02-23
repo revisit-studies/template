@@ -118,22 +118,45 @@ jobs:
           # Restore this sync workflow — it doesn't exist in upstream
           git checkout HEAD -- .github/workflows/sync_from_upstream.yaml
 
-      - name: Remove upstream-only dependencies from package.json
+      - name: Remove unused dependencies from package.json
         run: |
           node -e "
             const fs = require('fs');
             const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            // @visdesignlab/upset2-react is only needed for the UpSet2
-            // example study which is not included in this template.
-            const upstreamOnlyDeps = [
-              '@visdesignlab/upset2-react',
+
+            // Packages only used in example studies removed from this template.
+            const unusedDeps = [
+              '@visdesignlab/upset2-react', // UpSet2 example study only
+              'arquero',                    // src/public/tutorial/ brush components only
+              'topojson-client',            // src/public/demo-choropleth-map/ only
+              // MUI packages — not imported anywhere in src/ on dev branch
+              '@emotion/react',
+              '@emotion/styled',
+              '@mui/icons-material',
+              '@mui/material',
+              '@mui/system',
+              '@mui/x-data-grid',
+              'recoil',                     // not imported anywhere in src/
             ];
-            upstreamOnlyDeps.forEach((dep) => {
+            unusedDeps.forEach((dep) => {
               if (pkg.dependencies && dep in pkg.dependencies) {
-                console.log('Removing upstream-only dep:', dep);
+                console.log('Removing unused dep:', dep);
                 delete pkg.dependencies[dep];
               }
             });
+
+            // devDependencies only needed for removed example studies
+            const unusedDevDeps = [
+              '@types/topojson-client',        // only for demo-choropleth-map
+              '@types/topojson-specification', // only for demo-choropleth-map
+            ];
+            unusedDevDeps.forEach((dep) => {
+              if (pkg.devDependencies && dep in pkg.devDependencies) {
+                console.log('Removing unused devDep:', dep);
+                delete pkg.devDependencies[dep];
+              }
+            });
+
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
 
