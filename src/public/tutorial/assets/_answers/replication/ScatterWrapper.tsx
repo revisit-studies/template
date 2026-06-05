@@ -18,8 +18,8 @@ import { StimulusParams } from '../../../../../store/types';
  */
 export default function ScatterWrapper({ parameters }: StimulusParams<{ r1: number; r2: number }>) {
   const { r1, r2 } = parameters;
-  const r1DatasetName = `dataset_${r1.toFixed(1)}_size_100.csv`;
-  const r2DatasetName = `dataset_${r2.toFixed(1)}_size_100.csv`;
+  const r1DatasetName = `dataset_${r1.toFixed(2)}_size_100.csv`;
+  const r2DatasetName = `dataset_${r2.toFixed(2)}_size_100.csv`;
 
   return (
     <Stack style={{ width: '100%', height: '100%' }}>
