@@ -29,12 +29,6 @@ export default function ScatterWrapper({ parameters }: StimulusParams<{ r1: numb
       >
         Please select the visualization that appears to have a larger correlation.
       </Text>
-      <Text style={{
-        textAlign: 'center', paddingBottom: '24px', fontSize: '18px', fontWeight: 'bold',
-      }}
-      >
-        You can either click the buttons or use the‚ left and right keys.
-      </Text>
       <Center>
         <Group style={{ gap: '40px' }} mb="md">
           <Scatter r={r1} datasetName={r1DatasetName} />
