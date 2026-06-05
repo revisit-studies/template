@@ -29,6 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: main
           token: ${{ secrets.PAT }}
 
       - name: Fetch upstream and reset to match it
@@ -39,7 +40,7 @@ jobs:
 
           git remote add upstream https://github.com/revisit-studies/study.git
           UPSTREAM_REF="${{ github.event.inputs.upstream_ref }}"
-          git fetch upstream "${UPSTREAM_REF:-main}"
+          git fetch -- upstream "${UPSTREAM_REF:-main}"
           UPSTREAM_SHA=$(git rev-parse FETCH_HEAD)
           echo "UPSTREAM_SHA=$UPSTREAM_SHA" >> "$GITHUB_ENV"
           echo "Syncing from upstream @ $UPSTREAM_SHA"
@@ -74,9 +75,9 @@ jobs:
 
       - name: Remove study/demo folders not included in template
         run: |
-          # Top-level public/: keep only shared assets and utilities.
-          # All studies and other extras brought in by the reset are removed.
-          KEEP_PUBLIC=("libraries" "revisitAssets" "revisitUtilities" "404.html" "vite.svg" "global.json" "README.md")
+          # Top-level public/: keep shared assets, utilities, and tutorial study assets.
+          # All other studies and extras brought in by the reset are removed.
+          KEEP_PUBLIC=("libraries" "tutorial" "revisitAssets" "revisitUtilities" "404.html" "vite.svg" "global.json" "README.md")
           for item in public/*; do
             name=$(basename "$item")
             keep=false
@@ -89,8 +90,8 @@ jobs:
             fi
           done
 
-          # src/public/: keep library React components only.
-          KEEP_SRC_PUBLIC=("libraries")
+          # src/public/: keep library React components and tutorial dependencies.
+          KEEP_SRC_PUBLIC=("libraries" "tutorial" "example-brush-interactions")
           for item in src/public/*; do
             [[ -e "$item" ]] || continue  # skip if glob matched nothing
             name=$(basename "$item")
@@ -104,6 +105,9 @@ jobs:
             fi
           done
 
+          # Root tests/: remove upstream demo/example E2E tests from the template.
+          rm -rf tests
+
       - name: Remove unused dependencies from package.json
         run: |
           node -e "
@@ -113,7 +117,6 @@ jobs:
             // Packages only used in example studies removed from this template.
             const unusedDeps = [
               '@visdesignlab/upset2-react', // UpSet2 example study only
-              'arquero',                    // src/public/tutorial/ brush components only
               'topojson-client',            // src/public/demo-choropleth-map/ only
               // MUI packages — not imported anywhere in src/ on dev branch
               '@emotion/react',
@@ -145,6 +148,9 @@ jobs:
 
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
+
+      - name: Refresh yarn.lock
+        run: yarn install --ignore-scripts --non-interactive
 
       - name: Commit and force push to main
         run: |
