@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react';
 import { BrushParams, BrushState } from '../../example-brush-interactions/assets/types';
 import { BrushPlot } from '../../example-brush-interactions/assets/BrushPlot';
 import { ParticipantData } from '../../../storage/types';
