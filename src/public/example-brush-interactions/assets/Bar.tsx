@@ -1,6 +1,6 @@
 import { useResizeObserver } from '@mantine/hooks';
 import { useMemo } from 'react';
-import type { ColumnTable } from 'arquero';
+import ColumnTable from 'arquero/dist/types/table/column-table';
 
 import * as d3 from 'd3';
 import { Loader } from '@mantine/core';
