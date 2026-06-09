@@ -56,8 +56,12 @@ jobs:
           # be restored from before the reset.
           # Note: public/global.json is handled separately below so the $schema
           # version is always taken from upstream rather than frozen in TEMPLATE_HEAD.
+          rm -rf public/tutorial src/public/tutorial
           git checkout "$TEMPLATE_HEAD" -- \
+            .env \
             README.md \
+            public/tutorial \
+            src/public/tutorial \
             .github/workflows/sync_from_upstream.yaml \
             .github/workflows/sync_from_upstream_test.yaml
 
