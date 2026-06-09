@@ -18,8 +18,8 @@ import { StimulusParams } from '../../../../../store/types';
  */
 export default function ScatterWrapper({ parameters }: StimulusParams<{ r1: number; r2: number }>) {
   const { r1, r2 } = parameters;
-  const r1DatasetName = `dataset_${r1.toFixed(1)}_size_100.csv`;
-  const r2DatasetName = `dataset_${r2.toFixed(1)}_size_100.csv`;
+  const r1DatasetName = `dataset_${r1.toFixed(2)}_size_100.csv`;
+  const r2DatasetName = `dataset_${r2.toFixed(2)}_size_100.csv`;
 
   return (
     <Stack style={{ width: '100%', height: '100%' }}>
@@ -28,12 +28,6 @@ export default function ScatterWrapper({ parameters }: StimulusParams<{ r1: numb
       }}
       >
         Please select the visualization that appears to have a larger correlation.
-      </Text>
-      <Text style={{
-        textAlign: 'center', paddingBottom: '24px', fontSize: '18px', fontWeight: 'bold',
-      }}
-      >
-        You can either click the buttons or use the‚ left and right keys.
       </Text>
       <Center>
         <Group style={{ gap: '40px' }} mb="md">
