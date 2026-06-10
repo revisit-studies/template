@@ -1,12 +1,18 @@
 # reVISit study – Interactive, Web-Based User Studies.  
 
-Create your own interactive, web-based data online experiement by setting up your own repository based on this template. The template tracks stable releases of revisit, i.e., the main branch of https://github.com/revisit-studies/study/.
+Create your own interactive, web-based data online experiment by setting up your own repository based on this template. The template tracks stable releases of revisit, i.e., the main branch of https://github.com/revisit-studies/study/.
 
 To get started with this template, see the instructions on [how to use this template](https://revisit.dev/docs/getting-started/installation/#starting-from-the-template-repository-recommended).
 
-To see anything on the page you'll be serving, you should will need to set up a [basic study](https://revisit.dev/docs/getting-started/your-first-study/).
+To see anything on the page you'll be serving, you will need to set up a [basic study](https://revisit.dev/docs/getting-started/your-first-study/).
 
 For general tutorials and documentation on reVISit, see the [reVISit website](https://revisit.dev). 
+
+Useful tutorial links:
+
+* [Tutorial guide](https://revisit.dev/docs/tutorial/)
+* [Tutorial config reference](https://revisit.dev/docs/tutorial/config.json/)
+* [Replication tutorial config reference](https://revisit.dev/docs/tutorial/replication-config.json/)
 
 
 ## Build Instructions

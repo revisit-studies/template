@@ -62,9 +62,15 @@ jobs:
           # Note: public/global.json is handled separately below so the $schema
           # version is always taken from upstream rather than frozen in TEMPLATE_HEAD.
           rm -rf public/tutorial src/public/tutorial
+          rm -f \
+            .github/workflows/pr_close.yaml \
+            .github/workflows/release.yaml \
+            .github/workflows/release_github.yaml
           git checkout "$TEMPLATE_HEAD" -- \
             .env \
             README.md \
+            .github/workflows/deploy_website.yaml \
+            public/README.md \
             public/tutorial \
             src/public/tutorial \
             .github/workflows/sync_from_upstream.yaml \
