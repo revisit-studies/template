@@ -64,6 +64,7 @@ jobs:
           rm -rf public/tutorial src/public/tutorial
           rm -f \
             .github/workflows/pr_close.yaml \
+            .github/workflows/playwright.yml \
             .github/workflows/release.yaml \
             .github/workflows/release_github.yaml
           git checkout "$TEMPLATE_HEAD" -- \
