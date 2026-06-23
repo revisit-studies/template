@@ -5,9 +5,8 @@ name: Sync from Upstream
 # template-specific files on top and force-pushes. This keeps the template
 # from falling behind upstream in git history.
 #
-# Note: deploy_website.yaml is synced from upstream but the deployment base
-# path (/template/) is controlled by GitHub Environment secrets, not the
-# workflow file itself, so syncing it is safe.
+# Note: deploy_website.yaml is template-specific because this repo only
+# publishes the main template site, not dev or per-PR previews.
 
 on:
   workflow_dispatch:
@@ -56,8 +55,19 @@ jobs:
           # be restored from before the reset.
           # Note: public/global.json is handled separately below so the $schema
           # version is always taken from upstream rather than frozen in TEMPLATE_HEAD.
+          rm -rf public/tutorial src/public/tutorial
+          rm -f \
+            .github/workflows/pr_close.yaml \
+            .github/workflows/playwright.yml \
+            .github/workflows/release.yaml \
+            .github/workflows/release_github.yaml
           git checkout "$TEMPLATE_HEAD" -- \
+            .env \
             README.md \
+            .github/workflows/deploy_website.yaml \
+            public/README.md \
+            public/tutorial \
+            src/public/tutorial \
             .github/workflows/sync_from_upstream.yaml \
             .github/workflows/sync_from_upstream_test.yaml
 
