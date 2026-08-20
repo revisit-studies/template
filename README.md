@@ -1,68 +1,26 @@
-# ReVISit study – Interactive, Web-Based User Studies.
+# reVISit study – Interactive, Web-Based User Studies.  
 
-ReVISit introduces reVISit.spec, a DSL for specifying study setups (consent forms, training, trials, etc.) for interactive web-based studies. You describe your experimental setup in reVISit.spec, add your stimuli as images, forms, HTML pages, or React components, build and deploy — and you're ready to run your study. For tutorials and documentation, see the [reVISit website](https://revisit.dev).
+Create your own interactive, web-based data online experiment by setting up your own repository based on this template. The template tracks stable releases of revisit, i.e., the main branch of https://github.com/revisit-studies/study/.
 
-Create your own interactive, web-based data visualization by starting from the [template repository](https://github.com/revisit-studies/template) that tracks the stable version of this repository but removes unnecessary code baggage. Check out the [installation documentation](https://revisit.dev/docs/getting-started/installation/) for details.
+To get started with this template, see the instructions on [how to use this template](https://revisit.dev/docs/getting-started/installation/#starting-from-the-template-repository-recommended).
 
-## Paper
+To see anything on the page you'll be serving, you will need to set up a [basic study](https://revisit.dev/docs/getting-started/your-first-study/).
 
-If you are using reVISit for a paper, please cite:
+For general tutorials and documentation on reVISit, see the [reVISit website](https://revisit.dev). 
 
-> Zach Cutler, Jack Wilburn, Hilson Shrestha, Yiren Ding, Brian Bollen, Khandaker Abrar Nadib, Tingying He, Andrew McNutt, Lane Harrison, Alexander Lex. [ReVISit 2: A Full Experiment Life Cycle User Study Framework](https://www.visdesignlab.net/publications/2025_vis_revisit/). IEEE Transactions on Visualization and Computer Graphics (VIS), 32(1): 13-23, [doi:10.1109/TVCG.2025.3633896](https://dx.doi.org/10.1109/TVCG.2025.3633896), 2026.
+Useful tutorial links:
 
-**IEEE VIS 2025 Best Paper Award**
+* [Tutorial guide](https://revisit.dev/docs/tutorial/)
+* [Tutorial config reference](https://revisit.dev/docs/tutorial/config.json/)
+* [Replication tutorial config reference](https://revisit.dev/docs/tutorial/replication-config.json/)
 
-GitHub citation metadata for this repository is available in [CITATION.cff](./CITATION.cff).
 
 ## Build Instructions
 
-To run this demo experiment locally, you will need to install Node.js on your computer.
+To run your study based on this template locally, you will need to install node on your computer. 
 
-* Clone `https://github.com/revisit-studies/study`
-* Run `yarn install`. If you don't have Yarn installed, run `npm i -g yarn`.
+* Clone your repository created based on this template.
+* Run `yarn install`. If you don't have yarn installed, run `npm i -g yarn`. 
 * To run locally, run `yarn serve`.
 * Go to [http://localhost:8080](http://localhost:8080) to view it in your browser. The page will reload when you make changes.
-
-## Adding Tests
-
-This repo uses two test types:
-
-* **Unit tests** with **Vitest** for parser, utility, and component logic.
-* **End-to-end (E2E) tests** with **Playwright** for participant/designer flows in a running app.
-
-### Unit tests (Vitest)
-
-* Place unit tests in a sibling `tests/` folder next to the source file they cover.
-* Use the same base filename and add `.spec.` (for example: `src/parser/parser.ts` -> `src/parser/tests/parser.spec.ts`).
-* Use `vitest` APIs (`describe`, `test`/`it`, `expect`).
-* Run unit tests with:
-
-```bash
-yarn unittest
-```
-
-### E2E tests (Playwright)
-
-* Put E2E tests in the root `tests/` directory.
-* Name files with `.spec.ts` (for example: `tests/demo-vlat.spec.ts`).
-* Keep tests focused on user-observable behavior (navigation, input, progression, reviewer/designer behavior).
-* Run E2E tests with:
-
-```bash
-yarn test
-```
-
-## Release Instructions
-
-Releasing reVISit.dev happens automatically when a PR is merged into the `main` branch. The pull request title must exactly match the release version, e.g. `v1.0.0`. The release workflow updates version-pinned references, creates a release commit, and pushes a tag with the same name as the PR. Pushing the tag automatically creates the official GitHub release with generated release notes. The `main` branch is protected and requires two reviews before merging.
-
-The workflow for release looks as follows:
-Develop features on feature branch
-| PRs
-Dev branch
-| PR (1 per release)
-Main branch
-| Run release workflow on merge
-References are updated, and a release commit and tag are pushed
-| Tag push and repository dispatch events
-GitHub release is created and downstream builds are triggered
+ 
