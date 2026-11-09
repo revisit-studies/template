@@ -23,10 +23,8 @@
     // https://username.github.io/repo-name/?/one/two&a=b~and~c=d#qwe
     // Otherwise, leave pathSegmentsToKeep as 0.
 
-    // Keep the deployment directory for nested permanent and PR deployments.
-    var deploymentSegment = window.location.pathname.split('/')[2];
-    var nestedDeploymentFound = /^(?:dev|supabase|dev-supabase|PR\d+)$/.test(deploymentSegment);
-    var pathSegmentsToKeep = nestedDeploymentFound ? 2 : 1;
+    // The template publishes one app at the repository root; the next segment is a study.
+    var pathSegmentsToKeep = 1;
 
     var l = window.location;
     // Do not recursively encode a redirect when its deployment root is also missing.

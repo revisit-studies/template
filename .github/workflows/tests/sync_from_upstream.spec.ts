@@ -61,3 +61,36 @@ test.each(['sync_from_upstream.yaml', 'sync_from_upstream_test.yaml'])('%s retai
   retained.forEach((path) => expect(readFileSync(resolve(directory, path), 'utf8')).toBe('fixture'));
   removed.forEach((path) => expect(() => readFileSync(resolve(directory, path))).toThrow());
 });
+
+test.each(['sync_from_upstream.yaml', 'sync_from_upstream_test.yaml'])('%s preserves template routing, environment checks, and workflow tests after an upstream reset', (file) => {
+  const workflow = parse(readFileSync(resolve(root, '.github/workflows', file), 'utf8')) as { jobs: { sync: { steps: Step[] } } };
+  const step = workflow.jobs.sync.steps.find(({ name }) => name === 'Restore template-specific files')!;
+  const directory = mkdtempSync(resolve(tmpdir(), 'revisit-template-restore-'));
+  temporaryDirectories.push(directory);
+  const files = [
+    '.env', 'README.md', '.github/workflows/deploy_website.yaml', 'public/README.md',
+    'public/tutorial/config.json', 'src/public/tutorial/Example.tsx',
+    '.github/workflows/sync_from_upstream.yaml', '.github/workflows/sync_from_upstream_test.yaml',
+    '.github/workflows/tests/deploy_website.spec.ts', '.github/workflows/tests/sync_from_upstream.spec.ts',
+    '.github/workflows/tests/404.spec.ts', 'public/404.html',
+    'scripts/check-template-env.mjs', 'scripts/tests/check-template-env.spec.ts',
+  ];
+  const git = (...args: string[]) => execFileSync('git', args, { cwd: directory, encoding: 'utf8', stdio: 'pipe' });
+  git('init', '--initial-branch=main');
+  git('config', 'user.name', 'Test');
+  git('config', 'user.email', 'test@example.com');
+  git('config', 'core.hooksPath', '/dev/null');
+  files.forEach((path) => {
+    mkdirSync(resolve(directory, path, '..'), { recursive: true });
+    writeFileSync(resolve(directory, path), `template:${path}`);
+  });
+  git('add', '.');
+  git('commit', '-m', 'Template customizations');
+  const templateHead = git('rev-parse', 'HEAD').trim();
+  files.forEach((path) => writeFileSync(resolve(directory, path), `upstream:${path}`));
+  rmSync(resolve(directory, '.github/workflows/tests/sync_from_upstream.spec.ts'));
+  git('add', '-A');
+  git('commit', '-m', 'Upstream reset');
+  execFileSync('bash', ['-e', '-c', step.run!], { cwd: directory, env: { ...process.env, TEMPLATE_HEAD: templateHead } });
+  files.forEach((path) => expect(readFileSync(resolve(directory, path), 'utf8')).toBe(`template:${path}`));
+});

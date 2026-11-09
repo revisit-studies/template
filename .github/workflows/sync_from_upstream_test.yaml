@@ -71,6 +71,10 @@ jobs:
             .env \
             README.md \
             .github/workflows/deploy_website.yaml \
+            .github/workflows/tests \
+            scripts/check-template-env.mjs \
+            scripts/tests/check-template-env.spec.ts \
+            public/404.html \
             public/README.md \
             public/tutorial \
             src/public/tutorial \
@@ -205,10 +209,16 @@ jobs:
           cp "$RUNNER_TEMP/template-yarn.lock" yarn.lock
           node scripts/check-lockfile-drift.mjs
 
-      - name: Verify template build
+      - name: Check template environment settings
+        run: |
+          git show "$UPSTREAM_SHA:.env" > "$RUNNER_TEMP/upstream.env"
+          node scripts/check-template-env.mjs "$RUNNER_TEMP/upstream.env"
+
+      - name: Verify template build and tests
         run: |
           yarn install --frozen-lockfile --non-interactive
           yarn build
+          yarn unittest run .github/workflows/tests scripts/tests/check-template-env.spec.ts --maxWorkers=2
 
       - name: Commit and force push to target branch
         run: |

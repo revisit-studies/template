@@ -26,17 +26,19 @@ jobs:
 
       - run: yarn install --immutable
 
-      # If on main without env vars, build with .env file
-      - name: Build with .env file
-        if: ${{ vars.VITE_STORAGE_ENGINE == '' }}
-        run: yarn build
-
-      # If on main with env vars, build with github environment variables
-      - name: Build with github environment variables
-        if: ${{ vars.VITE_STORAGE_ENGINE != '' }}
-        run: VITE_STORAGE_ENGINE=$VITE_STORAGE_ENGINE yarn build
+      - name: Build template deployment
+        run: |
+          if [ -z "$VITE_STORAGE_ENGINE" ]; then unset VITE_STORAGE_ENGINE; fi
+          if [ -z "$VITE_RECAPTCHA_ENTERPRISE_SITE_KEY" ]; then
+            unset VITE_RECAPTCHA_ENTERPRISE_SITE_KEY
+            if [ "$GITHUB_REPOSITORY" = "revisit-studies/template" ]; then
+              export VITE_RECAPTCHA_ENTERPRISE_SITE_KEY=6LeksfUtAAAAADwbkOg-HyN8ZkMD04uIbJvrSWeX
+            fi
+          fi
+          yarn build
         env:
           VITE_STORAGE_ENGINE: ${{ vars.VITE_STORAGE_ENGINE }}
+          VITE_RECAPTCHA_ENTERPRISE_SITE_KEY: ${{ vars.VITE_RECAPTCHA_ENTERPRISE_SITE_KEY }}
 
       - uses: peaceiris/actions-gh-pages@v3
         name: Deploy
