@@ -81,13 +81,29 @@ jobs:
             const upstream = JSON.parse(fs.readFileSync('public/global.json', 'utf8'));
             const template = { '\$schema': upstream['\$schema'], configsList: [], configs: {} };
             fs.writeFileSync('public/global.json', JSON.stringify(template, null, 2) + '\n');
+
+            // Preserve tutorial content while following the upstream schema release.
+            for (const file of ['config.json', 'replication-config.json', '_answers/config.json', '_answers/replication-config.json']) {
+              const path = 'public/tutorial/' + file;
+              const config = JSON.parse(fs.readFileSync(path, 'utf8'));
+              config['\$schema'] = upstream['\$schema'].replace('GlobalConfigSchema.json', 'StudyConfigSchema.json');
+              fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\n');
+            }
           "
 
       - name: Remove study/demo folders not included in template
         run: |
           # Top-level public/: keep shared assets, utilities, and tutorial study assets.
           # All other studies and extras brought in by the reset are removed.
-          KEEP_PUBLIC=("libraries" "tutorial" "revisitAssets" "revisitUtilities" "404.html" "vite.svg" "global.json" "README.md")
+          # Retain the small configs imported by parser/library unit tests.
+          KEEP_PUBLIC=(
+            "libraries" "tutorial" "revisitAssets" "revisitUtilities"
+            "404.html" "vite.svg" "global.json" "README.md"
+            "test-response-functions" "test-global-store" "test-global-store-operations" "test-global-store-failures"
+            "demo-templating" "demo-calvi-study" "library-drawing" "test-factors"
+            "test-markdown-factors" "demo-stroop-factors" "test-max-study2" "demo-dsf-study"
+            "demo-ffl-study" "incentives-corr" "demo-training" "demo-answer-feedback"
+          )
           for item in public/*; do
             name=$(basename "$item")
             keep=false
@@ -100,8 +116,17 @@ jobs:
             fi
           done
 
+          # Only the correlation config is used by unit tests; omit its image collection.
+          rm -rf public/incentives-corr/assets
+
           # src/public/: keep library React components and tutorial dependencies.
-          KEEP_SRC_PUBLIC=("libraries" "tutorial" "example-brush-interactions")
+          # Response tests load these modules through the production module registry.
+          KEEP_SRC_PUBLIC=(
+            "libraries" "tutorial" "example-brush-interactions" "test-response-functions"
+            "demo-form-elements" "demo-dynamic" "test-global-store" "demo-react-trrack"
+            "demo-templating" "test-step-logic" "test-factors" "test-max-study2"
+            "demo-dsf-study" "demo-ffl-study"
+          )
           for item in src/public/*; do
             [[ -e "$item" ]] || continue  # skip if glob matched nothing
             name=$(basename "$item")
@@ -117,6 +142,8 @@ jobs:
 
           # Root tests/: remove upstream demo/example E2E tests from the template.
           rm -rf tests
+          # The template does not publish framework releases.
+          rm -f scripts/tests/release.spec.ts src/parser/tests/feedbackExamples.spec.ts
 
       - name: Remove unused dependencies from package.json
         run: |
@@ -159,8 +186,23 @@ jobs:
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
 
-      - name: Refresh yarn.lock
-        run: yarn install --ignore-scripts --non-interactive
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Refresh and verify dependency lockfiles
+        run: |
+          npm install --global npm@11.12.1
+          yarn install --ignore-scripts --non-interactive
+          cp yarn.lock "$RUNNER_TEMP/template-yarn.lock"
+          npm install --package-lock-only --ignore-scripts
+          cp "$RUNNER_TEMP/template-yarn.lock" yarn.lock
+          node scripts/check-lockfile-drift.mjs
+
+      - name: Verify template build
+        run: |
+          yarn install --frozen-lockfile --non-interactive
+          yarn build
 
       - name: Commit and force push to main
         run: |
