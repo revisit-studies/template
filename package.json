@@ -4,7 +4,6 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "buildDocs": "typedoc",
     "serve": "vite --host=0.0.0.0 --port=8080",
     "typecheck": "tsc --noEmit",
     "build": "tsc && vite build",
@@ -13,12 +12,9 @@
     "generate-schema:GlobalConfig": "ts-json-schema-generator --path src/parser/types.ts --out src/parser/GlobalConfigSchema.json --type GlobalConfig --no-type-check",
     "generate-schema:LibraryConfig": "ts-json-schema-generator --path src/parser/types.ts --out src/parser/LibraryConfigSchema.json --type LibraryConfig --no-type-check",
     "generate-schemas": "yarn generate-schema:StudyConfig && yarn generate-schema:GlobalConfig && yarn generate-schema:LibraryConfig",
-    "generate-library-docs": "node libraryDocGenerator.cjs",
-    "generate-library-examples": "node libraryExampleStudyGenerator.cjs",
     "test": "playwright test",
     "unittest": "vitest",
     "unittest-coverage": "vitest run --coverage --coverage.reporter=text",
-    "find-revisit-users": "bash scripts/find-revisit-users.sh",
     "postinstall": "husky && node scripts/patch-mantine-react-table.cjs"
   },
   "lint-staged": {
@@ -80,8 +76,6 @@
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
     "ts-json-schema-generator": "^2.9.0",
-    "typedoc": "^0.28.20",
-    "typedoc-plugin-markdown": "^4.12.0",
     "use-deep-compare-effect": "^1.8.1",
     "uuid": "^14.0.3",
     "vega": "^6.2.0",

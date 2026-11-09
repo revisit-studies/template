@@ -99,14 +99,9 @@ jobs:
         run: |
           # Top-level public/: keep shared assets, utilities, and tutorial study assets.
           # All other studies and extras brought in by the reset are removed.
-          # Retain the small configs imported by parser/library unit tests.
           KEEP_PUBLIC=(
             "libraries" "tutorial" "revisitAssets" "revisitUtilities"
             "404.html" "vite.svg" "global.json" "README.md"
-            "test-response-functions" "test-global-store" "test-global-store-operations" "test-global-store-failures"
-            "demo-templating" "demo-calvi-study" "library-drawing" "test-factors"
-            "test-markdown-factors" "demo-stroop-factors" "test-max-study2" "demo-dsf-study"
-            "demo-ffl-study" "incentives-corr" "demo-training" "demo-answer-feedback"
           )
           for item in public/*; do
             name=$(basename "$item")
@@ -120,17 +115,12 @@ jobs:
             fi
           done
 
-          # Only the correlation config is used by unit tests; omit its image collection.
-          rm -rf public/incentives-corr/assets
+          # The internal test-only library is not for study designers.
+          rm -rf public/libraries/test
 
           # src/public/: keep library React components and tutorial dependencies.
-          # Response tests load these modules through the production module registry.
-          KEEP_SRC_PUBLIC=(
-            "libraries" "tutorial" "example-brush-interactions" "test-response-functions"
-            "demo-form-elements" "demo-dynamic" "test-global-store" "demo-react-trrack"
-            "demo-templating" "test-step-logic" "test-factors" "test-max-study2"
-            "demo-dsf-study" "demo-ffl-study"
-          )
+          # The tutorial's React examples import example-brush-interactions.
+          KEEP_SRC_PUBLIC=("libraries" "tutorial" "example-brush-interactions")
           for item in src/public/*; do
             [[ -e "$item" ]] || continue  # skip if glob matched nothing
             name=$(basename "$item")
@@ -147,7 +137,32 @@ jobs:
           # Root tests/: remove upstream demo/example E2E tests from the template.
           rm -rf tests
           # The template does not publish framework releases.
-          rm -f scripts/tests/release.spec.ts src/parser/tests/feedbackExamples.spec.ts
+          rm -f scripts/tests/release.spec.ts
+
+      - name: Remove framework development files
+        run: |
+          # The template is for study designers, so framework unit tests, docs
+          # tooling, release checklists, and maintainer agent instructions are
+          # removed. Template tests in .github/workflows/tests and scripts/tests stay.
+          for dir in src public supabase; do
+            if [[ -d "$dir" ]]; then
+              find "$dir" -type d -name tests -prune -exec rm -rf {} +
+            fi
+          done
+          rm -rf .agents .github/ISSUE_TEMPLATE typedocDocuments
+          rm -f \
+            AGENTS.md \
+            LibraryDocGenerator.spec.ts \
+            LibraryExampleStudyGenerator.spec.ts \
+            libraryDocGenerator.cjs \
+            libraryExampleStudyGenerator.cjs \
+            typedoc.json \
+            tsconfig.typedoc.json \
+            typedocReadMe.md \
+            scripts/clear-out-firebase.sh \
+            scripts/find-revisit-users.sh \
+            .github/workflows/vitest.yml \
+            .github/workflows/dependency-lock-drift.yml
 
       - name: Remove unused dependencies from package.json
         run: |
@@ -167,6 +182,8 @@ jobs:
               '@mui/system',
               '@mui/x-data-grid',
               'recoil',                     // not imported anywhere in src/
+              'typedoc',                    // framework API docs only
+              'typedoc-plugin-markdown',    // framework API docs only
             ];
             unusedDeps.forEach((dep) => {
               if (pkg.dependencies && dep in pkg.dependencies) {
@@ -185,6 +202,11 @@ jobs:
                 console.log('Removing unused devDep:', dep);
                 delete pkg.devDependencies[dep];
               }
+            });
+
+            // Scripts whose framework development files are removed above.
+            ['buildDocs', 'generate-library-docs', 'generate-library-examples', 'find-revisit-users'].forEach((script) => {
+              delete pkg.scripts[script];
             });
 
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
