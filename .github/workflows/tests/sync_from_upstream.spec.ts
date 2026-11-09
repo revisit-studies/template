@@ -46,7 +46,8 @@ test.each(['sync_from_upstream.yaml', 'sync_from_upstream_test.yaml'])('%s keeps
   ];
   const removed = [
     'public/demo-video/video.mp4', 'public/test-global-store/config.json', 'public/library-drawing/config.json',
-    'public/libraries/test/config.json', 'src/public/demo-dynamic/assets/dynamic.tsx', 'src/public/test-step-logic/func.ts',
+    'public/libraries/test/config.json', 'src/public/libraries/test/assets/test.tsx',
+    'src/public/demo-dynamic/assets/dynamic.tsx', 'src/public/test-step-logic/func.ts',
     'tests/demo.spec.ts', 'scripts/tests/release.spec.ts',
   ];
   [...retained, ...removed].forEach((path) => {

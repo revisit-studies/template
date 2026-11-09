@@ -116,7 +116,7 @@ jobs:
           done
 
           # The internal test-only library is not for study designers.
-          rm -rf public/libraries/test
+          rm -rf public/libraries/test src/public/libraries/test
 
           # src/public/: keep library React components and tutorial dependencies.
           # The tutorial's React examples import example-brush-interactions.
