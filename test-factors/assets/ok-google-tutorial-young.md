@@ -1,3 +1,0 @@
-# Young Tutorial
-
-Young
