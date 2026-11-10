@@ -17,10 +17,12 @@
     ]
   },
   "importedLibraries": [
-    "mic-check"
+    "screen-recording"
   ],
   "uiConfig": {
     "recordAudio": true,
+    "recordScreen": true,
+    "recordWebcam": true,
     "contactEmail": "contact@revisit.dev",
     "helpTextPath": "tutorial/assets/help.md",
     "logoPath": "revisitAssets/revisitLogoSquare.svg",
@@ -392,6 +394,37 @@
           "prompt": "What is 2 + 2?"
         }
       ]
+    },
+    "pick-fruits": {
+      "type": "questionnaire",
+      "response": [
+        {
+          "id": "fruits",
+          "prompt": "Pick the fruits for your smoothie:",
+          "type": "checkbox",
+          "options": ["Apple", "Banana", "Mango", "Strawberry"],
+          "required": true
+        }
+      ]
+    },
+    "rate-smoothie": {
+      "type": "markdown",
+      "path": "tutorial/assets/smoothie.md",
+      "parameters": {
+        "size": "large",
+        "shop": "reVISit Lab"
+      },
+      "response": [
+        {
+          "id": "taste",
+          "prompt": "How tasty do you think this smoothie would be?",
+          "type": "likert",
+          "numItems": 5,
+          "leftLabel": "Yuck",
+          "rightLabel": "Delicious",
+          "required": true
+        }
+      ]
     }
   },
   "sequence": {
@@ -399,7 +432,7 @@
     "components": [
       "welcome",
       "consent",
-      "$mic-check.components.audioTest",
+      "$screen-recording.components.screenRecordingPermission",
       "demographics",
       "trainingWithFeedback",
       "coinImage",
@@ -465,7 +498,9 @@
             "to": "end"
           }
         ]
-      }
+      },
+      "pick-fruits",
+      "rate-smoothie"
     ]
   }
 }
