@@ -425,6 +425,52 @@
           "required": true
         }
       ]
+    },
+    "global-variable-1": {
+      "type": "markdown",
+      "path": "tutorial/assets/global-budget.md",
+      "parameters": {
+        "budgetFor": "Food"
+      },
+      "response": [
+        {
+          "id": "spend",
+          "type": "numerical",
+          "prompt": "How much do you want to allocate?",
+          "default": 10,
+          "min": 0,
+          "max": "{{globalVariables.budget}}",
+          "onSubmit": [
+            {
+              "variable": "budget",
+              "operation": "subtract"
+            }
+          ]
+        }
+      ]
+    },
+    "global-variable-2": {
+      "type": "markdown",
+      "path": "tutorial/assets/global-budget.md",
+      "parameters": {
+        "budgetFor": "Lodging"
+      },
+      "response": [
+        {
+          "id": "spend",
+          "type": "numerical",
+          "prompt": "How much do you want to allocate?",
+          "default": 10,
+          "min": 0,
+          "max": "{{globalVariables.budget}}",
+          "onSubmit": [
+            {
+              "variable": "budget",
+              "operation": "subtract"
+            }
+          ]
+        }
+      ]
     }
   },
   "sequence": {
@@ -500,7 +546,12 @@
         ]
       },
       "pick-fruits",
-      "rate-smoothie"
+      "rate-smoothie",
+      "global-variable-1",
+      "global-variable-2"
     ]
+  },
+  "globalVariables": {
+    "budget": 100
   }
 }
