@@ -17,10 +17,12 @@
     ]
   },
   "importedLibraries": [
-    "mic-check"
+    "screen-recording"
   ],
   "uiConfig": {
     "recordAudio": true,
+    "recordScreen": true,
+    "recordWebcam": true,
     "contactEmail": "contact@revisit.dev",
     "helpTextPath": "tutorial/assets/help.md",
     "logoPath": "revisitAssets/revisitLogoSquare.svg",
@@ -422,6 +424,83 @@
         "dataset": "penguin",
         "brushType": "Slider Selection"
       }
+    },
+    "pick-fruits": {
+      "type": "questionnaire",
+      "response": [
+        {
+          "id": "fruits",
+          "prompt": "Pick the fruits for your smoothie:",
+          "type": "checkbox",
+          "options": ["Apple", "Banana", "Mango", "Strawberry"],
+          "required": true
+        }
+      ]
+    },
+    "rate-smoothie": {
+      "type": "markdown",
+      "path": "tutorial/assets/smoothie.md",
+      "parameters": {
+        "size": "large",
+        "shop": "reVISit Lab"
+      },
+      "response": [
+        {
+          "id": "taste",
+          "prompt": "How tasty do you think this smoothie would be?",
+          "type": "likert",
+          "numItems": 5,
+          "leftLabel": "Yuck",
+          "rightLabel": "Delicious",
+          "required": true
+        }
+      ]
+    },
+    "global-variable-1": {
+      "type": "markdown",
+      "path": "tutorial/assets/global-budget.md",
+      "parameters": {
+        "budgetFor": "Food"
+      },
+      "response": [
+        {
+          "id": "spend",
+          "type": "numerical",
+          "prompt": "How much do you want to allocate?",
+          "default": 10,
+          "min": 0,
+          "max": "{{globalVariables.budget}}",
+          "onSubmit": [
+            {
+              "variable": "budget",
+              "operation": "subtract"
+            }
+          ]
+        }
+      ]
+    },
+    "global-variable-2": {
+      "type": "markdown",
+      "path": "tutorial/assets/global-budget.md",
+      "parameters": {
+        "budgetFor": "Lodging"
+      },
+      "response": [
+        {
+          "id": "spend",
+          "type": "numerical",
+          "prompt": "How much do you want to allocate?",
+          "default": 10,
+          "min": 0,
+          "max": "{{globalVariables.budget}}",
+          "onSubmit": [
+            {
+              "variable": "budget",
+              "operation": "subtract"
+            }
+          ]
+        }
+      ]
     }
   },
   "factors": {
@@ -452,7 +531,7 @@
     "components": [
       "welcome",
       "consent",
-      "$mic-check.components.audioTest",
+      "$screen-recording.components.screenRecordingPermission",
       "demographics",
       "trainingWithFeedback",
       "coinImage",
@@ -532,7 +611,14 @@
             "to": "end"
           }
         ]
-      }
+      },
+      "pick-fruits",
+      "rate-smoothie",
+      "global-variable-1",
+      "global-variable-2"
     ]
+  },
+  "globalVariables": {
+    "budget": 100
   }
 }
